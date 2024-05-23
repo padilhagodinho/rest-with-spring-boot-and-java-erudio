@@ -39,6 +39,65 @@ public class MathController {
 		}
 		return convertToDouble(numberOne) - convertToDouble(numberTwo);
 	}
+	
+	@RequestMapping(value = "/division/{numberOne}/{numberTwo}",
+			method = RequestMethod.GET)
+	public Double division(
+			@PathVariable(value = "numberOne") String numberOne,
+			@PathVariable(value = "numberTwo") String numberTwo
+		) throws Exception {
+		
+		if(!isNumeric(numberOne) || !isNumeric(numberTwo)) {
+			throw new UnsupportedMathOperationException("Please set a numeric value");
+		}
+		
+		if(convertToDouble(numberTwo) == 0D) {
+			throw new UnsupportedMathOperationException("Second number has to be greater than 0");
+		}
+		
+		return convertToDouble(numberOne) / convertToDouble(numberTwo);
+	}
+	
+	@RequestMapping(value = "/multiplication/{numberOne}/{numberTwo}",
+			method = RequestMethod.GET)
+	public Double multiplication(
+			@PathVariable(value = "numberOne") String numberOne,
+			@PathVariable(value = "numberTwo") String numberTwo
+		) throws Exception {
+		
+		if(!isNumeric(numberOne) || !isNumeric(numberTwo)) {
+			throw new UnsupportedMathOperationException("Please set a numeric value");
+		}
+		
+		return convertToDouble(numberOne) * convertToDouble(numberTwo);
+	}
+	
+	@RequestMapping(value = "/sqrt/{numberOne}",
+			method = RequestMethod.GET)
+	public Double sqrt(
+			@PathVariable(value = "numberOne") String numberOne
+		) throws Exception {
+		
+		if(!isNumeric(numberOne)) {
+			throw new UnsupportedMathOperationException("Please set a numeric value");
+		}
+		
+		return Math.sqrt(convertToDouble(numberOne));
+	}
+	
+	@RequestMapping(value = "/mean/{numberOne}/{numberTwo}",
+			method = RequestMethod.GET)
+	public Double mean(
+			@PathVariable(value = "numberOne") String numberOne,
+			@PathVariable(value = "numberTwo") String numberTwo
+		) throws Exception {
+		
+		if(!isNumeric(numberOne) || !isNumeric(numberTwo)) {
+			throw new UnsupportedMathOperationException("Please set a numeric value");
+		}
+		
+		return (convertToDouble(numberOne) + convertToDouble(numberTwo))/2;
+	}
 
 	private Double convertToDouble(String strNumber) {
 		if(strNumber == null) return 0D;
