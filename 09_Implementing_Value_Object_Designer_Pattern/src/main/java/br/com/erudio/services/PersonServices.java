@@ -6,7 +6,9 @@ import java.util.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import br.com.erudio.data.vo.v1.PersonVO;
 import br.com.erudio.exceptions.ResourceNotFoundException;
+import br.com.erudio.mapper.DozerMapper;
 import br.com.erudio.model.Person;
 import br.com.erudio.repository.PersonRepository;
 
@@ -18,46 +20,51 @@ public class PersonServices {
 	
 	private Logger logger = Logger.getLogger(PersonServices.class.getName());
 	
-	public List<Person> findAll() {
+	public List<PersonVO> findAll() {
 		
 		logger.info("Finding all Persons!");
 		
-		return personRepository.findAll();
+		return DozerMapper.parseListObjects(personRepository.findAll(), PersonVO.class);
 	}
 	
-	public Person findById(Long id) {
+	public PersonVO findById(Long id) {
 		
 		logger.info("Finding one Person!");
 		
-		return personRepository.findById(id)
-				.orElseThrow(() -> new ResourceNotFoundException("No records found for the ID!"));
+		Person person = personRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found for the ID!"));
+		
+		return DozerMapper.parseObject(person, PersonVO.class);
 	}
 	
-	public Person create(Person person) {
+	public PersonVO create(PersonVO personVo) {
 		
-		logger.info("Creating one Person!");
+		logger.info("Creating one PersonVO!");
 		
-		return personRepository.save(person);
+		Person person = personRepository.save(DozerMapper.parseObject(personVo, Person.class));
+		
+		return DozerMapper.parseObject(person, PersonVO.class);
 	}
 	
-	public Person update(Person person) {
+	public PersonVO update(PersonVO PersonVo) {
 		
 		logger.info("Updating one Person!");
 		
-		Person personUpdated = findById(person.getId());
-		personUpdated.setFirstName(person.getFirstName());
-		personUpdated.setLastName(person.getLastName());
-		personUpdated.setAddress(person.getAddress());
-		personUpdated.setGender(person.getGender());
+		Person personUpdated = personRepository.findById(PersonVo.getId()).orElseThrow(() -> new ResourceNotFoundException("No records found for the ID!"));
+		personUpdated.setFirstName(PersonVo.getFirstName());
+		personUpdated.setLastName(PersonVo.getLastName());
+		personUpdated.setAddress(PersonVo.getAddress());
+		personUpdated.setGender(PersonVo.getGender());
 		
-		return personRepository.save(personUpdated);
+		Person person = personRepository.save(personUpdated);
+		
+		return DozerMapper.parseObject(person, PersonVO.class);
 	}
 	
 	public void delete(Long id) {
 		
 		logger.info("Deleting one Person!");
 		
-		personRepository.delete(findById(id));
+		personRepository.delete(personRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("No records found for the ID!")));
 	}
 
 }
